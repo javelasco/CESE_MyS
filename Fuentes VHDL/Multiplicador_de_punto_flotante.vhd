@@ -11,9 +11,9 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 entity Multiplicador_de_punto_flotante is
-    Port ( x : in STD_LOGIC_VECTOR (31 downto 0);   --Factor X
-           y : in STD_LOGIC_VECTOR (31 downto 0);   --factor Y 
-           z : out STD_LOGIC_VECTOR (31 downto 0)); --Producto Z
+    Port ( x 	 : in STD_LOGIC_VECTOR (31 downto 0);   --Factor X
+           y 	 : in STD_LOGIC_VECTOR (31 downto 0);   --factor Y 
+           z 	 : out STD_LOGIC_VECTOR (31 downto 0)); --Producto Z
 end Multiplicador_de_punto_flotante;
 
 architecture Behavioral of Multiplicador_de_punto_flotante is
@@ -44,6 +44,7 @@ begin
                 variable multiply_rounder : STD_LOGIC_VECTOR (22 downto 0);
         
         begin 
+			
                 x_bit_signo := x(31);
                 x_exponente(7 downto 0) := x(30 downto 23);
                 x_exponente(8) := '0';

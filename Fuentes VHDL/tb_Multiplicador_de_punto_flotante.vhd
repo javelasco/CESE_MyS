@@ -16,34 +16,36 @@ end tb_Multiplicador_de_punto_flotante;
 
 architecture Behavioral of tb_Multiplicador_de_punto_flotante is
 
-component Multiplicador_de_punto_flotante is
-    Port ( x : in STD_LOGIC_VECTOR (31 downto 0);   --Factor X
-           y : in STD_LOGIC_VECTOR (31 downto 0);   --factor Y 
-           z : out STD_LOGIC_VECTOR (31 downto 0)); --Producto Z
+component Multiplicador_de_punto_flotante_clk is
+    Port ( clk_i 	: in STD_LOGIC;
+		   x 		: in STD_LOGIC_VECTOR (31 downto 0);   --Factor X
+           y        : in STD_LOGIC_VECTOR (31 downto 0);   --factor Y 
+           z        : out STD_LOGIC_VECTOR (31 downto 0)); --Producto Z
 end component;
 
-
 --entradas
-signal x : STD_LOGIC_VECTOR (31 downto 0);   --Factor X
-signal y : STD_LOGIC_VECTOR (31 downto 0);   --factor Y 
+signal clk_tb : STD_LOGIC := '0';                    --clk
+signal x_tb : STD_LOGIC_VECTOR (31 downto 0);   --Factor X2
+signal y_tb : STD_LOGIC_VECTOR (31 downto 0);   --factor Y2 
 
 --salida
-signal z : STD_LOGIC_VECTOR (31 downto 0); --Producto Z
+signal z_tb : STD_LOGIC_VECTOR (31 downto 0); --Producto Z2
 
 begin
-
-     uut: Multiplicador_de_punto_flotante PORT MAP (
-          x => x,
-          y => y,
-          z => z
+    clk_tb <= not clk_tb after 10 ns;
+    
+    uut: Multiplicador_de_punto_flotante_clk PORT MAP (
+          clk_i => clk_tb,
+          x => x_tb,
+          y => y_tb,
+          z => z_tb
         );
      stim_proc: process
      begin        
               -- hold reset state for 100 ns.
-         wait for 100 ns;
-                
-                   x<="01000000001000000000000000000000"; --2.5
-                   y<="11000001001010000000000000000000"; --(-10.5)
+        --/wait for 100 ns;               
+                   x_tb<="01000000001000000000000000000000"; --2.5
+                   y_tb<="11000001001010000000000000000000"; --(-10.5)
             
          wait;
      end process;
