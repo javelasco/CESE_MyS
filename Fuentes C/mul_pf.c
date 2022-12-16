@@ -1,6 +1,6 @@
 #include "xparameters.h"
 #include "xil_io.h"
-#include "mul_pf_ip.h"
+#include "mult_pf.h"
 #include "xuartps.h"
 
 //====================================================
@@ -10,27 +10,23 @@
 #define RECV_BUFFER_SIZE	1
 
 
-int res1 = 0;
-int opA1 = 0;
-int opB1 = 0;
-//int opA1=0x40200000;
-//int opB1=0xc1280000;
+int res1;
+int opA1=0x40200000;
+int opB1=0xc1280000;
 
 int res2;
-int opA2=0xA0200000;
-int opB2=0xc3280000;
+int opA2=0x40300000;
+int opB2=0xc1270000;
 
 int res3;
-int opA3=0x2A200000;
-int opB3=0xcE280000;
+int opA3=0x40100000;
+int opB3=0xc1260000;
 
 
 XUartPs uart_ps;
 XUartPs_Config *config;
 
 static u8 RecvBuffer;
-
-
 
 int main (void) {
 
@@ -49,54 +45,49 @@ int main (void) {
 	XUartPs_SetBaudRate(&uart_ps,115200);
 	//========================================================================
 
-	xil_printf("Bienvenidos!\r\n");
-	while(1)
-	{
+	xil_printf("Bienvenidos!\r\n\n");
+	while(1) {
 		data_rec=XUartPs_Recv(&uart_ps,&RecvBuffer,RECV_BUFFER_SIZE);
-		if(data_rec!=0)
-		{
+		if(data_rec!=0) {
 			data=RecvBuffer;
 
 			xil_printf("Operacion: %i \r\n",RecvBuffer);
 
-		}
+			switch(data) {
+			case 49: // data es igual a #1
+				xil_printf(" - Primera multiplicacion: \r\n");
 
-		switch(data){
-		case 49: // data es igual a #1
-			xil_printf("Primera multiplicacion: \r\n");
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG0_OFFSET, opA1);
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG1_OFFSET, opB1);
+				res1 = MULT_PF_mReadReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG2_OFFSET);
 
-			//MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG0_OFFSET, opA1);
-			//MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG1_OFFSET, opB1);
-			opA1 = MUL_PF_IP_mReadReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG0_OFFSET);
-			opB1 = MUL_PF_IP_mReadReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG1_OFFSET);
-			res1 = MUL_PF_IP_mReadReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG2_OFFSET);
+				xil_printf("  * Multiplicacion: %x x %x = %x\r\n\n", opA1, opB1, res1);
+				break;
 
-			xil_printf(" --Multiplicacion: %x * %x = %x\r\n", opA1, opB1, res1);
-			break;
+			case 50: // data es igual a #2
+				xil_printf(" - Segunda multiplicacion: \r\n");
 
-		case 50: // data es igual a #2
-			xil_printf("Segunda multiplicacion: \r\n");
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG0_OFFSET, opA2);
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG1_OFFSET, opB2);
+				res2 = MULT_PF_mReadReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG2_OFFSET);
 
-			MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG0_OFFSET, opA2);
-			MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG1_OFFSET, opB2);
-			res2 = MUL_PF_IP_mReadReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG2_OFFSET);
+				xil_printf("  * Multiplicacion: %x x %x = %x\r\n\n", opA2, opB2, res2);
+				break;
 
-			xil_printf(" --Multiplicacion: %x * %x = %x\r\n", opA2, opB2, res2);
-			break;
+			case 51: // data es igual a #3
+				xil_printf(" - Tercera multiplicacion: \r\n");
 
-		case 51: // data es igual a #3
-			xil_printf("Tercera multiplicacion: \r\n");
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG0_OFFSET, opA3);
+				MULT_PF_mWriteReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG1_OFFSET, opB3);
+				res3 = MULT_PF_mReadReg(XPAR_MULT_PF_0_S_AXI_BASEADDR, MULT_PF_S_AXI_SLV_REG2_OFFSET);
 
-			MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG0_OFFSET, opA3);
-			MUL_PF_IP_mWriteReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG1_OFFSET, opB3);
-			res3 = MUL_PF_IP_mReadReg(XPAR_MUL_PF_IP_S_AXI_BASEADDR, MUL_PF_IP_S_AXI_SLV_REG2_OFFSET);
+				xil_printf("  * Multiplicacion: %x x %x = %x\r\n\n", opA3, opB3, res3);
+				break;
 
-			xil_printf(" --Multiplicacion: %x * %x = %x\r\n", opA3, opB3, res3);
-			break;
-
-		default:
-			//xil_printf("seleccione operacion. \r\n");
-			break;
+			default:
+				xil_printf("Seleccione una operacion correcta! \r\n\n");
+				break;
+			}
 		}
 	}
 }
